@@ -21,7 +21,7 @@ def home():
     return render_template('index.html')
 
 # Upload Route
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
         file = request.files['pdf']
