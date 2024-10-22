@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, render_template, request, redirect, url_for
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from google.oauth2 import service_account
@@ -15,20 +15,26 @@ if missing_padding:
 key_json = base64.b64decode(encoded_key).decode('utf-8')
 credentials = service_account.Credentials.from_service_account_info(json.loads(key_json))
 drive_service = build('drive', 'v3', credentials=credentials)
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+# Upload Route
+@app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
-        file = request.files['pdf']
+        file = request.files['file']
         if file:
-            file.save(file.filename)
-            media = MediaFileUpload(file.filename, mimetype='application/pdf')
-            drive_service.files().create(
-                media_body=media,
-                body={'name': file.filename, 'parents': ['1kP7PS88Z7d71-9x80UmRaSaQsey1QY0P']}
-            ).execute()
-            os.remove(file.filename)
-            return render_template('index.html', message="File uploaded successfully!")
-    return render_template('index.html')
+            filename = file.filename
+            filepath = os.path.join('/your/upload/folder', filename)
+            file.save(filepath)
+            return redirect(url_for('home'))  
+    return render_template('upload.html')
+
+# PowerPoint Presentation Route
+@app.route('/presentation')
+def presentation():
+    return render_template('presentation.html')
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
