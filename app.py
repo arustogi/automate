@@ -21,7 +21,7 @@ def home():
     return render_template('index.html')
 
 # Upload Route
-@app.route('/upload', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
         file = request.files['pdf']
@@ -30,7 +30,7 @@ def upload_file():
             media = MediaFileUpload(file.filename, mimetype='application/pdf')
             drive_service.files().create(
                 media_body=media,
-                body={'name': file.filename, 'parents': ['1kP7PS88Z7d71-9x80UmRaSaQsey1QY0P']}  # Add the correct folder ID
+                body={'name': file.filename, 'parents': ['1kP7PS88Z7d71-9x80UmRaSaQsey1QY0P']}
             ).execute()
             os.remove(file.filename)
             return render_template('upload.html', message="File uploaded successfully!")
