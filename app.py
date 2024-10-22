@@ -24,6 +24,11 @@ def home():
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
+        if 'pdf' not in request.files:
+            return "No file part", 400
+        file = request.files['pdf']
+        if file.filename == '':
+            return "No selected file", 400
         file = request.files['pdf']
         if file:
             file.save(file.filename)
