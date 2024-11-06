@@ -7,11 +7,15 @@ import json
 import os
 app = Flask(__name__)
 SCOPES = ['https://www.googleapis.com/auth/drive.file']
-
 encoded_key = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+if not encoded_key:
+    raise ValueError("Environment variable 'GOOGLE_APPLICATION_CREDENTIALS' not found. Ensure it's set correctly.")
+
 missing_padding = len(encoded_key) % 4
 if missing_padding:
     encoded_key += '=' * (4 - missing_padding)
+
+# Decode the key
 key_json = base64.b64decode(encoded_key).decode('utf-8')
 credentials = service_account.Credentials.from_service_account_info(json.loads(key_json))
 drive_service = build('drive', 'v3', credentials=credentials)
